@@ -23,7 +23,7 @@ jobs:
               uses: actions/checkout@v6.1.0 # Buscar lista de actions en catálogo de github
             - name: Configurar JDK 21
               uses: actions/setup-java@v6.0.1
-              with:
+              with: # Bloque de atributos adicionales para el action
                 distribution: 'temurin'
                 java-version: '21'
             - name: compilar el proyecto
