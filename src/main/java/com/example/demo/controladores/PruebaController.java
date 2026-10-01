@@ -14,6 +14,6 @@ public class PruebaControlles{
 
     @GetMapping("/despedida")
     public String otroEndpoint(){
-        return "Hasta la siguiente semana!";
+        return "Hasta la siguiente semana!!";
     }
 }
