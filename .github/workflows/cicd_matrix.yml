@@ -1,6 +1,6 @@
 # Archivo yamalin
 # Respetar identación de los elementos
-name: Mi primer CI/CD Pipeline
+name: CI/CD Pipeline con Matrix Build
 # Bloque on indica cuando se ejecuta el workflow
 on:
     push:
@@ -16,16 +16,27 @@ jobs:
     # Job de compilación
     compilacion:
         # En que tipo de máquina se ejecuta
-        runs-on: ubuntu-latest # Buscar tipos de máquinas desde catálogo de github
+        runs-on: ${{ matrix.os }} # Nueva forma de parametrizar manejo de máquinas
+        # Bloque para definir los datos de la matriz
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                java: [25, 26]
         # Pasos a ejecutar
         steps:
             - name: clonando el repositorio
               uses: actions/checkout@v6.1.0 # Buscar lista de actions en catálogo de github
-            - name: Configurar JDK 21
+            - name: Configurar JDK ${{ matrix.java }}
               uses: actions/setup-java@v6.0.1
               with: # Bloque de atributos adicionales para el action
                 distribution: 'temurin'
-                java-version: '21'
+                java-version: '${{ matrix.java }}'
+            # Paso para cachear dependencias
+            - name: Cache de paquetes maven
+              uses: actions/cache@v4
+              with:
+                path: ~/.m2/repository
+                key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }} # Herramientas disponibles por github
             - name: compilar el proyecto
               # run: mvn spring-boot:run & # evitar salida en consola con &
               run: mvn clean package -DskipTests
