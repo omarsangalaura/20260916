@@ -27,7 +27,13 @@ jobs:
                 distribution: 'temurin'
                 java-version: '21'
             - name: compilar el proyecto
-              run: mvn spring-boot:run
+              run: mvn spring-boot:run &
               env:
                   DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
                   NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
+            - name: Esperar y probar un endpoint
+              run: |
+                sleep 20
+                curl http://localhost:8080/actuator/health
+            - name: Detener aplicación
+              run: pkill -f 'org.springframework.boot.loader.JarLauncher'
