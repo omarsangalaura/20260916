@@ -1,0 +1,30 @@
+# Archivo yamalin
+# Respetar identación de los elementos
+name: Mi primer CI/CD Pipeline
+# Bloque on indica cuando se ejecuta el workflow
+on:
+    push:
+        branches:
+            - main
+    # Fusión de ramas de diferentes usuarios (reconciliación)
+    pull_request:
+        branches:
+            - main
+# Bloques de trabajos realizados
+jobs:
+    # Nombre del job sin espacios ni símbolos especiales
+    # Job de compilación
+    compilacion:
+        # En que tipo de máquina se ejecuta
+        runs-on: ubuntu-latest # Buscar tipos de máquinas desde catálogo de github
+        # Pasos a ejecutar
+        steps:
+            - name: clonando el repositorio
+              uses: actions/checkout@v6.1.0 # Buscar lista de actions en catálogo de github
+            - name: Configurar JDK 21
+              uses: actions/setup-java@v.6.0.1
+              with:
+                distribution: 'temurin'
+                java-version: '21'
+            - name: compilar el proyecto
+              run: mvn clean install
