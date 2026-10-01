@@ -27,7 +27,7 @@ jobs:
                 distribution: 'temurin'
                 java-version: '21'
             - name: compilar el proyecto
-              run: mvn clean install
+              run: mvn spring-boot:run
               env:
                   DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
                   NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
