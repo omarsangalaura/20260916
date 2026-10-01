@@ -27,13 +27,18 @@ jobs:
                 distribution: 'temurin'
                 java-version: '21'
             - name: compilar el proyecto
-              run: mvn spring-boot:run &
+              # run: mvn spring-boot:run & # evitar salida en consola con &
+              run: mvn clean package -DskipTests
               env:
                   DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
                   NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
-            - name: Esperar y probar un endpoint
+            - name: Ejecutar proyecto
               run: |
+                java -jar target/demo-0.0.1-SNAPSHOT.jar &
+                echo $! > springboot.pid 
+            - name: Esperar y probar un endpoint
+              run: | # dirigir salida del comando anterior
                 sleep 20
                 curl http://localhost:8080/actuator/health
             - name: Detener aplicación
-              run: pkill -f 'org.springframework.boot.loader.JarLauncher'
+              run: kill -9 ${cat springboot.pid}
