@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1")
-public class PruebaControlles{
+public class PruebaController{
     @GetMapping("/saludo")
     public String unEndpoint(){
         return "Hola a todos";
