@@ -44,4 +44,4 @@ jobs:
                 sleep 20
                 curl http://localhost:8080/actuator/health
             - name: Detener aplicación
-              run: kill -9 ${cat springboot.pid}
+              run: kill -9 $(cat springboot.pid)
