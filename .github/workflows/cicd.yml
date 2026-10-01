@@ -35,7 +35,10 @@ jobs:
             - name: Ejecutar proyecto
               run: |
                 java -jar target/demo-0.0.1-SNAPSHOT.jar &
-                echo $! > springboot.pid 
+                echo $! > springboot.pid
+              env:
+                  DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
+                  NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
             - name: Esperar y probar un endpoint
               run: | # dirigir salida del comando anterior
                 sleep 20
