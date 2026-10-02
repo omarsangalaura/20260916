@@ -1,0 +1,33 @@
+name: Build & test reutilizable
+on:
+    # Bloque para reutilizar el workflow
+    workflow_call:
+        # Bloque para definir las entradas que recibe la plantilla
+        inputs:
+            # Bloque para el parámetro de entrada
+            java-version: # Nombre del parámetro
+                # Condiciones del parámetro
+                required: true
+                type: string
+jobs:
+    build-y-tests:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6.0.1
+            - name: Configurar JDK ${{ inputs.java-version }}
+              uses: actions/setup-java@v6.0.1
+              with:
+                distribution: 'temurin'
+                java-version: '${{ inputs.java-version }}'
+            - name: Cache de paquetes maven
+              uses: actions/cache@v4
+              with:
+                path: ~/.m2/repository
+                key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+            - name: Compilar el proyecto y pruebas
+              run: mvn clean verify
+              env:
+                DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
+                NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
+            
