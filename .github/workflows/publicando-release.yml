@@ -1,0 +1,48 @@
+name: Publicando release Spring Boot
+on:
+    push:
+        # Bloque para indicar etiquetas detectas para hacer el release
+        tags:
+            - 'v*' # Formato de la etiqueta generada
+# Los jobs de release necesitan permisos y trabajar con etiquetas
+jobs:
+    build-y-release:
+        runs-on: ubuntu-latest
+        # Permisos para generar el release
+        permissions:
+            contents: write # Escritura necesaria para crear release en cuenta github
+        steps:
+            - name: Clonando proyecto
+              uses: actions/checkout@v6.1.0
+              with:
+                fetch-depth: 0 # Necesario para recuperar todos los tags y sus commits (inclusión changelog)
+            - name: Configurar JDK 25
+              uses: actions/setup-java@v6.0.1
+              with:
+                distribution: 'temurin'
+                java-version: '25'
+                cache: maven # Propiedad para gestionar cache de dependencias maven
+            - name: Compilar Jar
+              run: mvn clean package -DskipTests
+              env:
+                DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
+                NOMBRE_USR: ${{ secrets.NOMBRE_USR }} 
+            # Generando el release
+            - name: Crear Release
+              uses: softprops/action-gh-release@v3.0.0
+              with:
+                name: "Release ${{ github.ref_name }}" # Título usando nombre de referencia manejado en GitHub
+                # Bloque para incluir detalles del release
+                body: |
+                  ## Cambios en esta versión
+                  - Se han agregado nuevas funcionalidades y mejoras.
+                  - Se han corregido errores reportados por los usuarios.
+                  - Mejoras en el rendimiento y la estabilidad
+                draft: false
+                prerelease: false
+                generate_release_notes: true
+                # Bloque para incluir los archivos añadidos como assets del release
+                files: |
+                  target/*.jar
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Manejar token dadop or github a la maquina virtual
