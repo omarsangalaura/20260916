@@ -36,6 +36,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: ~/.m2/repository
+                # Ruta de la carpeta de configuración para cachear dependencias
                 key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }} # Herramientas disponibles por github
             - name: compilar el proyecto
               # run: mvn spring-boot:run & # evitar salida en consola con &
@@ -56,6 +57,11 @@ jobs:
               run: | # dirigir salida del comando anterior
                 sleep 20
                 curl http://localhost:8080/actuator/health
+            - name: Ejecutando test con maven
+              run: mvn clean verify
+              env:
+                  DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
+                  NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
             - name: Detener aplicación
               shell: bash
               run: kill -9 $(cat springboot.pid) # leer de archivo y sustituir con parentesis ()
