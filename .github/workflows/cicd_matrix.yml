@@ -14,7 +14,7 @@ on:
 jobs:
     # Nombre del job sin espacios ni símbolos especiales
     # Job de compilación
-    compilacion:
+    compilacion-pruebas:
         # En que tipo de máquina se ejecuta
         runs-on: ${{ matrix.os }} # Nueva forma de parametrizar manejo de máquinas
         # Bloque para definir los datos de la matriz
@@ -58,6 +58,7 @@ jobs:
                 sleep 20
                 curl http://localhost:8080/actuator/health
             - name: Ejecutando test con maven
+              shell: bash
               run: mvn clean verify
               env:
                   DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
@@ -65,3 +66,44 @@ jobs:
             - name: Detener aplicación
               shell: bash
               run: kill -9 $(cat springboot.pid) # leer de archivo y sustituir con parentesis ()
+    # Bloque para otro job de despliegue
+    deploy:
+        # Bloque para controlar la ejecución del job si otro job fue exitoso
+        needs: compilacion-pruebas
+        runs-on: ubuntu-latest
+        # Condicional para restringir ejecución al estar en rama main con un evento push
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6.1.0
+            - name: Configurar JDK 26
+              uses: actions/setup-java@v6.0.1
+              with:
+                distribution: 'temurin'
+                java-version: '26'
+            - name: Cache de paquetes maven
+              uses: actions/cache@v4
+              with:
+                path: ~/.m2/repository
+                # Ruta de la carpeta de configuración con dependencias cacheadas
+                # ubuntu por el nombre del so
+                key: ubuntu-maven-${{ hashFiles('**/pom.xml') }}
+                # Orden para recuperar los archivos cacheadas para ubuntu
+                restore-key: | 
+                  ubuntu-maven-
+            - name: Compilar el proyecto
+              run: mvn clean package -DskipTests
+              env:
+                  DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
+                  NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
+#            - name: Desplegar el servidor remoto
+#              uses: appleboy/ssh-action@v0.1.6
+#              with:
+#                host: ${{ secrets }}
+#                username: ${{ secrets }}
+#                key: ${{ secrets }}
+#                script: |
+#                    cd /ruta/al/proyecto
+#                    git pull origin main
+#                    mvn clean package -DskipTests
+#                    nohup java -jar target/demo-0.0.1-SNAPSHOT.jar &
