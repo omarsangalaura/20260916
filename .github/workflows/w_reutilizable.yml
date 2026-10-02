@@ -40,7 +40,7 @@ jobs:
                 path: target/demo-0.0.1-SNAPSHOT.jar
             # Paso para descargar el artifact
             - name: Download a Build Artifact
-              uses: actions/download-artifact@v3.0.1
+              uses: actions/download-artifact@v7.0.0
               with:
                 # Nombre del artifact
                 name: springboot-app
