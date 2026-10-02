@@ -57,15 +57,22 @@ jobs:
               run: | # dirigir salida del comando anterior
                 sleep 20
                 curl http://localhost:8080/actuator/health
+            # Este bloque no se puede ejecutar por que se borra el archivo ejecutado
+            #- name: Ejecutando test con maven
+            #  shell: bash
+            #  run: mvn clean verify
+            #  env:
+            #      DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
+            #      NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
+            - name: Detener aplicación
+              shell: bash
+              run: kill -9 $(cat springboot.pid) # leer de archivo y sustituir con parentesis ()
             - name: Ejecutando test con maven
               shell: bash
               run: mvn clean verify
               env:
                   DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
                   NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
-            - name: Detener aplicación
-              shell: bash
-              run: kill -9 $(cat springboot.pid) # leer de archivo y sustituir con parentesis ()
     # Bloque para otro job de despliegue
     deploy:
         # Bloque para controlar la ejecución del job si otro job fue exitoso
