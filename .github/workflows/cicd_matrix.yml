@@ -72,14 +72,14 @@ jobs:
               shell: bash
               # Ejecución de análisis conectandose con sonarcloud
               # Buscar proyectKey en URL del proyecto
-              run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+              run: | 
+                mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
                    -Dsonar.projectKey=omarsangalaura_20260916 \
                    -Dsonar.organization=omarsangalaura \
-                   -Dsonar.host.url='https://sonarcloud.io'
+                   -Dsonar.host.url=https://sonarcloud.io \
                    -Dsonar.token="${SONAR_TOKEN}"
               env:
                   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-                  SONAR_HOST_URL: https://sonarcloud.io
     # Bloque para otro job de despliegue
     deploy:
         # Bloque para controlar la ejecución del job si otro job fue exitoso
