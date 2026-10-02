@@ -30,4 +30,10 @@ jobs:
               env:
                 DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
                 NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
-            
+            - name: Upload a Build Artifact
+              uses: actions/upload-artifact@v7.0.1
+              with:
+                # Nombre del artefacto para ser guardado
+                name: springboot-app
+                # ruta donde esta el archivo que se subira al repositorio
+                path: target/demo-0.0.1-SNAPSHOT.jar

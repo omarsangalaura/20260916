@@ -9,10 +9,14 @@ on:
             - main
             - develop
 jobs:
+    # Bloque de job que utilizará el workflow reutilizable
     pruebas:
         uses: ./.github/workflows/w_reutilizable.yml
+        # Pasar parámetros al workflow reutilizable
         with:
+            # Coincidir con los nombres de los parámetros
             java-version: 25
+    # Se puede crear otros jobs además del que se esta utilizando
     deploy:
         needs: pruebas
         runs-on: ubuntu-latest
