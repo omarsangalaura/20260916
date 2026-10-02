@@ -67,12 +67,18 @@ jobs:
             - name: Detener aplicación
               shell: bash
               run: kill -9 $(cat springboot.pid) # leer de archivo y sustituir con parentesis ()
-            - name: Ejecutando test con maven
+            # Bloque para ejecución manual del análisis del código con sonarcloud
+            - name: Ejecutando análisis de código
               shell: bash
-              run: mvn clean verify
+              # Ejecución de análisis conectandose con sonarcloud
+              # Buscar proyectKey en URL del proyecto
+              run: mvn sonar:sonar \
+                   -Dsonar.projectKey=omarsangalaura_20260916 \
+                   -Dsonar.host.url=https://sonarcloud.io \
+                   -Dsonar.organization=omarsangalaura
               env:
-                  DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
-                  NOMBRE_USR: ${{ secrets.NOMBRE_USR }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+                  SONAR_HOST_URL: https://sonarcloud.io
     # Bloque para otro job de despliegue
     deploy:
         # Bloque para controlar la ejecución del job si otro job fue exitoso
@@ -106,9 +112,9 @@ jobs:
 #            - name: Desplegar el servidor remoto
 #              uses: appleboy/ssh-action@v0.1.6
 #              with:
-#                host: ${{ secrets }}
-#                username: ${{ secrets }}
-#                key: ${{ secrets }}
+#                host: ${{ secrets.REMOTE_HOST }}
+#                username: ${{ secrets.USERNAME }}
+#                key: ${{ secrets.KEY }}
 #                script: |
 #                    cd /ruta/al/proyecto
 #                    git pull origin main
